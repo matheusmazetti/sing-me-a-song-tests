@@ -27,6 +27,26 @@ describe("POST /recommendations", () => {
         let status = result.status
         expect(status).toEqual(409);
     });
+    it("return 422 when the object is wrong", async () => {
+        let body = {
+            names: "test1",
+            youtubeLink: "https://www.youtube.com/watch?v=05SILbfCpSA"
+        }
+
+        let result  = await supertest(app).post("/recommendations").send(body);
+        let status = result.status
+        expect(status).toEqual(422);
+    });
+    it("return 422 when the link is not from youtube", async () => {
+        let body = {
+            name: "test1",
+            youtubeLink: "https://www.google.com/watch?v=05SILbfCpSA"
+        }
+
+        let result  = await supertest(app).post("/recommendations").send(body);
+        let status = result.status
+        expect(status).toEqual(422);
+    });
 
 })
 
