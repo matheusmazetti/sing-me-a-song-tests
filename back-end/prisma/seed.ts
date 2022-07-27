@@ -1,6 +1,7 @@
 import { prisma } from "../src/database.js";
 
 async function main() {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations;`
     await prisma.recommendation.upsert({
         where: { name: "test1" },
         update: {},
