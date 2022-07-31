@@ -23,3 +23,24 @@ describe("GET /recommendations/:id", () => {
         expect(status).toEqual(404);
     })
 })
+
+describe("GET /recommendations/top/:amount", () => {
+    it("get the amount recommendations", async () => {
+        let result = await supertest(app).get("/recommendations/top/12");
+        let body = result.body;
+        expect(body).toHaveLength(12);
+    })
+});
+
+describe("GET /recommendations/random", () => {
+    it("get a unique random recommendation", async () => {
+        let result = await supertest(app).get("/recommendations/random");
+        let body = result.body;
+        expect(body).toEqual(expect.objectContaining({
+            id: expect.any(Number),
+            name: expect.any(String),
+            score: expect.any(Number),
+            youtubeLink: expect.any(String)
+        }));
+    });
+});
