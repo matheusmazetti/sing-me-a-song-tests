@@ -1,6 +1,7 @@
 import { prisma } from "../src/database.js";
 import supertest from 'supertest';
 import app from '../src/app.js';
+import { factory } from "./factories/recomendationFactory.js";
 
 describe("GET /recommendations", () => {
     it("get max 10 recommendations", async () => {
@@ -26,9 +27,10 @@ describe("GET /recommendations/:id", () => {
 
 describe("GET /recommendations/top/:amount", () => {
     it("get the amount recommendations", async () => {
-        let result = await supertest(app).get("/recommendations/top/12");
+        let amount = factory.getAmount();
+        let result = await supertest(app).get(`/recommendations/top/${amount}`);
         let body = result.body;
-        expect(body).toHaveLength(12);
+        expect(body).toHaveLength(amount);
     })
 });
 

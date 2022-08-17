@@ -1,11 +1,13 @@
 import { prisma } from "../src/database.js";
 import supertest from 'supertest';
 import app from '../src/app.js';
-import createRecommendation from "./factories/recomendationFactory.js";
+import { factory } from "./factories/recomendationFactory.js";
+import { faker } from "@faker-js/faker";
+
 
 describe("POST /recommendations", () => {
     it("recive 201 when the object is correct", async () => {
-        let body = createRecommendation();
+        let body = factory.createRecommendation();
 
         let result  = await supertest(app).post("/recommendations").send(body);
         let status = result.status
@@ -18,18 +20,15 @@ describe("POST /recommendations", () => {
         expect(status).toEqual(201);
     });
     it("return 409 when the name already exist", async () => {
-        let body = {
-            name: "test1",
-            youtubeLink: "https://www.youtube.com/watch?v=05SILbfCpSA"
-        }
-
+        let body = factory.createRecommendation();
+        await supertest(app).post("/recommendations").send(body);
         let result  = await supertest(app).post("/recommendations").send(body);
         let status = result.status
         expect(status).toEqual(409);
     });
     it("return 422 when the object is wrong", async () => {
         let body = {
-            names: "test1",
+            names: faker.music.songName(),
             youtubeLink: "https://www.youtube.com/watch?v=05SILbfCpSA"
         }
 
@@ -39,7 +38,7 @@ describe("POST /recommendations", () => {
     });
     it("return 422 when the link is not from youtube", async () => {
         let body = {
-            name: "test1",
+            name: faker.music.songName(),
             youtubeLink: "https://www.google.com/watch?v=05SILbfCpSA"
         }
 

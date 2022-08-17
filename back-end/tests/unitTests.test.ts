@@ -2,23 +2,19 @@ import { jest } from "@jest/globals";
 import { recommendationRepository } from "../src/repositories/recommendationRepository";
 import { recommendationService } from "../src/services/recommendationsService";
 import * as errorObject from "../src/utils/errorUtils";
-import createRecommendation from "./factories/recomendationFactory";
-
-beforeAll(() => {
-    jest.clearAllMocks();
-})
+import { factory } from "./factories/recomendationFactory";
 
 describe("new recommendation tests", () => {
     it("call the create function when the recommendation do not exist", async () => {
         jest.spyOn(recommendationRepository, "findByName").mockImplementationOnce((): any => {return false});
         jest.spyOn(recommendationRepository, "create").mockImplementationOnce((): any => {return true});
-        let recommendation = createRecommendation();
+        let recommendation = factory.createRecommendation();
         await recommendationService.insert(recommendation);
         expect(recommendationRepository.create).toBeCalled();
     });
     it("expect a throw when the recommendation already exist", async () => {
         jest.spyOn(recommendationRepository, "findByName").mockImplementationOnce((): any => {return true});
-        let recommendation = createRecommendation();
+        let recommendation = factory.createRecommendation();
         try{
             await recommendationService.insert(recommendation);
             expect(1).toBe(2);
