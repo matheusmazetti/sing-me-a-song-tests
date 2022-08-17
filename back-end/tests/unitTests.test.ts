@@ -4,6 +4,9 @@ import { recommendationService } from "../src/services/recommendationsService";
 import * as errorObject from "../src/utils/errorUtils";
 import createRecommendation from "./factories/recomendationFactory";
 
+beforeAll(() => {
+    jest.clearAllMocks();
+})
 
 describe("new recommendation tests", () => {
     it("call the create function when the recommendation do not exist", async () => {
@@ -86,18 +89,29 @@ describe("get recommendations tests", () => {
 
 describe("random recommendations tests", () => {
     it("throw a error when recommendations length is equal 0", async () => {
-        jest.spyOn(recommendationService, "getByScore").mockImplementationOnce((): any => {return [];});
-        try {
-            await recommendationService.getRandom();
-            expect(1).toEqual(2);
-        } catch (e) {
-            expect(e).not.toBeNull();
-        }
+        jest.spyOn(recommendationService, "getByScore").mockImplementationOnce((): any => {return ([])});
+        let promise = await recommendationService.getRandom();
+        expect(promise).rejects.toEqual(errorObject.notFoundError())
     });
     it("get by score function", async () => {
-        jest.spyOn(recommendationRepository, "findAll").mockImplementationOnce((): any => {return []});
+        jest.spyOn(recommendationRepository, "findAll").mockImplementationOnce((): any => {return false});
         await recommendationService.getByScore("gt");
         expect(recommendationRepository.findAll).toHaveBeenCalled();
+    })
+})
+
+describe("by score recommendations test", () => {
+    it("return all recommendations with score above 10", async () => {
+        jest.spyOn(recommendationRepository, "findAll").mockImplementationOnce((): any => {return ([1,2])});
+        let promise = await recommendationService.getByScore('gt');
+        expect(promise).toEqual([1, 2]);
+    })
+});
+
+describe("score filter test", () => {
+    it("return lte", async () => {
+        let result = recommendationService.getScoreFilter(1);
+        expect(result).toEqual("lte");
     })
 })
 
